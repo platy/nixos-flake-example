@@ -1,20 +1,12 @@
-# these args are passed into every nixos module (or file that is in included in a nixos module imports=[...])
+{ modulesPath, ... }:
 {
-    modulesPath, # this variable, in particular, gives us the nixos modules path for our system config
-    ...
-}:
-
-{
-    imports = [
-        # note: this format can't be used with flakes, because it pulls from
-        # NIX_PATH, which is impure, and dis-allowed with flakes.
-        # Use the format shown in the line below it.
-
-        #<nixpkgs/nixos/modules/installer/scan/not-detected.nix>
-
-        "${modulesPath}/installer/scan/not-detected.nix"
-
-    ];
-    boot.loader.systemd-boot.enable = true; # (for UEFI systems only)
-    fileSystems."/".device = "/dev/disk/by-label/nixos";
+  imports = [ (modulesPath + "/profiles/qemu-guest.nix") ];
+  boot.loader.grub = {
+    efiSupport = true;
+    efiInstallAsRemovable = true;
+    device = "nodev";
+  };
+  boot.initrd.kernelModules = [ "nvme" ];
+  fileSystems."/boot" = { device = "/dev/disk/by-uuid/591D-B8EA"; fsType = "vfat"; }; # TODO need to get rid of this UUID, maybe replace both with labels
+  fileSystems."/" = { device = "/dev/vda1"; fsType = "ext4"; };
 }
