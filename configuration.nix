@@ -2,7 +2,8 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ pkgs, self, ... }: {
+{ pkgs, ... }: {
+
   imports = [
     ./hardware-configuration.nix
   ];
@@ -21,10 +22,6 @@
 
   boot.cleanTmpDir = true;
   zramSwap.enable = true;
-
-  # Let 'nixos-version --json' know about the Git revision
-  # of this flake.
-  system.configurationRevision = pkgs.lib.mkIf (self ? rev) self.rev;
 
   # Network configuration.
   # networking.useDHCP = false;
